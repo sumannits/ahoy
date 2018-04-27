@@ -1,0 +1,44 @@
+
+<ion-content class="dark-bg">
+  <div class="logo">
+    <img src="assets/imgs/after-splash-logo.png" alt="">
+    <h2>Login</h2>
+  </div>
+  <form (submit)="doLogin()">
+		<ion-list class="m-0">
+			<ion-item>
+        <ion-label fixed><ion-icon name="md-person"></ion-icon></ion-label>
+				<ion-input type="text" placeholder="User Name"></ion-input>
+			</ion-item>
+			<ion-item>
+        <ion-label fixed><ion-icon name="md-lock"></ion-icon></ion-label>
+				<ion-input type="password" placeholder="Password"></ion-input>
+			</ion-item>
+		</ion-list>
+		<ion-list no-lines class="forget-remember-area m-0">
+		  <ion-grid>
+		    <ion-row class="align-items-center">
+		      <ion-col col-6 class="pl-0">
+            <ion-item class="m-0">
+              <ion-label>Remember Me</ion-label>
+              <ion-checkbox color="dark" checked="false"></ion-checkbox>
+            </ion-item>
+		      </ion-col>
+          <ion-col col-6 class="pr-0 text-right">
+              <a href="#" class="text-primary">forgot Password ?</a>
+		      </ion-col>
+		    </ion-row>
+		  </ion-grid>
+		 </ion-list>
+
+		<ion-list no-lines>
+			<div>
+				<button ion-button class="btn-primary" (click)="doLogin()" block>LOGIN</button>
+        <p class=" text-center text-dark-brown font-weight-medium">OR </p>
+        <button ion-button class="btn-primary btn-fb" block><ion-icon name="logo-facebook"></ion-icon> Connect With Facebook</button>
+        <button ion-button class="btn-primary btn-twitter" block><ion-icon name="logo-twitter"></ion-icon> Connect With Twitter</button>
+			</div>
+		</ion-list>
+		<p class="dont text-center text-dark-brown">Don’t have account?<span (click)="gotoSignupPage()" class="font-weight-medium text-primary text-uppercase"> SIGN UP </span></p>
+	</form>
+</ion-content>

@@ -1,0 +1,229 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+@mixin media-breakpoint-down($name, $breakpoints: $grid-breakpoints) {
+    $max: breakpoint-max($name, $breakpoints);
+    @if $max {
+      @media (max-width: $max) {
+        @content;
+      }
+    } @else {
+      @content;
+    }
+  }
+
+
+  // Name of the next breakpoint, or null for the last breakpoint.
+  //
+  //    >> breakpoint-next(sm)
+  //    md
+  //    >> breakpoint-next(sm, (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px))
+  //    md
+  //    >> breakpoint-next(sm, $breakpoint-names: (xs sm md lg xl))
+  //    md
+  @function breakpoint-next($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {
+    $n: index($breakpoint-names, $name);
+    @return if($n < length($breakpoint-names), nth($breakpoint-names, $n + 1), null);
+  }
+
+
+  // Maximum breakpoint width. Null for the largest (last) breakpoint.
+  // The maximum value is calculated as the minimum of the next one less 0.1.
+  //
+  //    >> breakpoint-max(sm, (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px))
+  //    767px
+  @function breakpoint-max($name, $breakpoints: $grid-breakpoints) {
+    $next: breakpoint-next($name, $breakpoints);
+    @return if($next, breakpoint-min($next, $breakpoints) - 1px, null);
+  }
+
+
+  // Creates text alignment classes based on screen size
+  // TODO this would be nice to add to the framework
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+      // Provide text `[text-{bp}]` attributes for aligning text based on screen size
+      [text#{$infix}-center] {
+        text-align: center;
+      }
+
+      [text#{$infix}-left] {
+        text-align: left;
+      }
+
+      [text#{$infix}-right] {
+        text-align: right;
+      }
+
+      [hidden#{$infix}-up] {
+        display: none;
+      }
+    }
+
+    @include media-breakpoint-down($breakpoint, $grid-breakpoints) {
+      [hidden#{$infix}-down] {
+        display: none;
+      }
+    }
+  }
+	@import url('https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900');
+	body, h1,h2,h3,h4,h5,h6,p,label,input,.label, .select-text, a, li, .segment-button, .toolbar-title{font-family: 'Montserrat', sans-serif; font-weight:400}
+	.button-ios, .button-md{border-radius:0; text-transform: none;height:2.8em; font-family: 'Montserrat', sans-serif;}
+
+  ion-app, ion-nav, ion-tab, ion-tabs, .app-root{
+    z-index: 1;
+  }
+
+a{text-decoration: none;}
+  .pl{
+    padding-left: 0 !important;
+  }
+  .pr{
+    padding-right: 0 !important;
+  }
+
+  .m-0{
+    margin: 0 !important;
+  }
+  .text-right{
+    text-align: right;
+  }
+
+  .text-primary{
+    color: #fc8578 !important;
+  }
+
+  .align-items-center{
+    align-items: center;
+  }
+
+  .checkbox .checkbox-icon{
+    border-radius: 2px;
+    border-width: 1px;
+    border-color: #787878;
+    background-color: #fff0ee;
+    width: 14px;
+    height: 14px;
+  }
+  .checkbox .checkbox-checked{
+    background: #fc8578 !important;
+    border-color: #fc8578 !important;
+  }
+
+  .checkbox-ios .checkbox-checked .checkbox-inner {
+    left: 5px;
+    top: 1px;
+  }
+
+  .btn-primary{
+    background: #fc8578;
+    color: #fff;
+    box-shadow: none;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .btn-fb{
+    background: #395692;
+  }
+
+  .btn-twitter{
+    background: #36b9ff;
+  }
+
+  .text-grey{
+    color: #aaaaaa;
+  }
+
+  .text-center{
+    text-align: center;
+  }
+
+  .font-weight-medium{
+    font-weight: 500;
+  }
+
+  .text-uppercase{
+    text-transform: uppercase;
+  }
+
+  .text-dark-brown{
+    color: #623d39;
+  }
+
+  .footer-tab-custom{
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+  }
+
+  .footer-tab-custom ul{
+    padding: 0;
+    text-align: center;
+    overflow: hidden;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+  }
+
+  .footer-tab-custom ul li{
+    width: 18%;
+    list-style: none;
+    padding: 5px 10px;
+  }
+
+  .footer-tab-custom ul li img{
+    // width: auto;
+     max-width: 30px;
+  }
+
+  .footer-tab-custom ul li.active{
+    color:#fc8578;
+  }
+  .footer-tab-custom ul li span{
+    display: block;
+    font-size: 13px;
+  }
+
+  .header-tab-area{
+    background: #fc8578;
+    color: #fff;
+  }
+  .header-tab-area ul{
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+  }
+  .header-tab-area ul li{
+    list-style: none;
+    padding: 14px 21px;
+    font-size: 18px;
+  }
+  .header-tab-area ul li ion-icon{
+    margin-right: 8px;
+  }
+  ion-navbar .toolbar-background{
+    background: #fc8578;
+    border-color: #fc8578;
+  }
+  ion-navbar .toolbar-title{color: #fff;}
+
+  ion-navbar .back-button{
+    color: #fff;
+  }

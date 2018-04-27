@@ -1,0 +1,44 @@
+<ion-content class="dark-bg">
+  <div class="logo">
+    <h2>Sign Up</h2>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="doSignup(form.value)"  #signupForm="ngForm">
+		<ion-list class="m-0" *ngIf="!isNextFrm">
+			<ion-item>
+        <ion-label fixed><ion-icon name="md-person"></ion-icon></ion-label>
+				<ion-input type="text" placeholder="Name" [formControl]="username" autocapitalize="off"></ion-input>
+			</ion-item>
+			<ion-item>
+        <ion-label fixed><ion-icon name="ios-mail"></ion-icon></ion-label>
+				<ion-input type="email" placeholder="Email Address" [formControl]="email" autocapitalize="off"></ion-input>
+			</ion-item>
+			<ion-item>
+        <ion-label fixed><ion-icon name="md-lock"></ion-icon></ion-label>
+				<ion-input type="password" placeholder="Password" [formControl]="password" autocapitalize="off" validateEqual="cpassword" name="password" reverse="true"></ion-input>
+			</ion-item>
+			<ion-item>
+        <ion-label fixed><ion-icon name="md-lock"></ion-icon></ion-label>
+				<ion-input type="password" placeholder="Confirm Password" [formControl]="cpassword"  name="cpassword" reverse="false" autocapitalize="off" validateEqual="password"></ion-input>
+			</ion-item>
+		</ion-list>
+    <ion-list class="m-0" *ngIf="isNextFrm">
+      <a class="text-dark-brown add-interest">  <ion-icon name="ios-add-circle-outline"></ion-icon>  Add Interested</a>
+			<ion-item>
+				<ion-input type="text" placeholder="Type your interest"></ion-input>
+			</ion-item>
+    </ion-list>
+        
+		<ion-list no-lines>
+			<div>
+        <button *ngIf="!isNextFrm" ion-button class="btn-primary" [disabled]="!signupForm.valid || !checkEmailExist" (click)="gotoNextSignup()" block>Next</button>
+        <div class="sign-btn" *ngIf="isNextFrm">
+          <button ion-button class="btn-primary" (click)="doSignup()" block>Sign up</button>
+        </div>
+        <p class=" text-center text-dark-brown font-weight-medium">OR </p>
+        <button *ngIf="!isNextFrm" ion-button class="btn-primary btn-fb" block><ion-icon name="logo-facebook"></ion-icon> Connect With Facebook</button>
+        <button *ngIf="!isNextFrm" ion-button class="btn-primary btn-twitter" block><ion-icon name="logo-twitter"></ion-icon> Connect With Twitter</button>
+			</div>
+		</ion-list>
+		<p class="dont text-center text-dark-brown">Already have an account ? <span (click)="onLogin()" class="font-weight-medium text-primary text-uppercase"> Sign In </span></p>
+	</form>
+</ion-content>

@@ -1,0 +1,52 @@
+<ion-menu [content]="content" id="menuside">
+    <ion-header class="sidebar-header">
+      <ion-item>
+        <ion-thumbnail item-start>
+          <!--<img src="{{profile_image}}">-->
+        </ion-thumbnail>
+        <h2>Suman </h2>
+      </ion-item>
+    </ion-header>
+
+<ion-content class="side-bar">
+    <ion-list> 
+        <button ion-item menuClose (click)="goToDestinationFromSidebar('1')" icon-start>
+            <ion-icon ios="ios-home" md="md-home" item-start></ion-icon>
+            Home
+        </button>
+    </ion-list>
+    <ion-list *ngIf="isloggedin == true"> 
+        <button ion-item menuClose (click)="goToDestinationFromSidebar('15')" icon-start>
+            <ion-icon ios="ios-settings" md="md-settings" item-start></ion-icon>
+            Account-Settings
+        </button>
+    </ion-list>
+    <ion-list *ngIf="isloggedin == true"> 
+        <button ion-item menuClose (click)="goToDestinationFromSidebar('0')" icon-start>
+            <ion-icon ios="ios-briefcase" md="md-briefcase" item-start></ion-icon>
+            Edit Profile
+        </button>
+    </ion-list>
+   
+   
+    <ion-list>
+        <button *ngIf="isloggedin == true" ion-item menuClose (click)="logout()" icon-start>
+            <ion-icon name="md-log-out" item-start></ion-icon>
+            Logout
+        </button>
+        <button *ngIf="isloggedin == false" ion-item menuClose (click)="login()" icon-start>
+            <ion-icon name="md-log-in" item-start></ion-icon>
+            Login
+        </button>
+    </ion-list>
+    <ion-list>
+        <button *ngIf="isloggedin == false" ion-item menuClose (click)="goToDestinationFromSidebar('16')" icon-start>
+            <ion-icon name="md-add-circle" item-start></ion-icon>
+            SignUp
+        </button>
+    </ion-list>
+</ion-content>
+</ion-menu>
+
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
