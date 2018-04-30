@@ -4,15 +4,15 @@
     <img src="assets/imgs/after-splash-logo.png" alt="">
     <h2>Login</h2>
   </div>
-  <form (submit)="doLogin()">
+  <form [formGroup]="form" #loginForm="ngForm">
 		<ion-list class="m-0">
 			<ion-item>
         <ion-label fixed><ion-icon name="md-person"></ion-icon></ion-label>
-				<ion-input type="text" placeholder="User Name"></ion-input>
+				<ion-input type="email" placeholder="Email" [formControl]="email" autocapitalize="off"></ion-input>
 			</ion-item>
 			<ion-item>
         <ion-label fixed><ion-icon name="md-lock"></ion-icon></ion-label>
-				<ion-input type="password" placeholder="Password"></ion-input>
+				<ion-input type="password" placeholder="Password" [formControl]="password" autocapitalize="off" ></ion-input>
 			</ion-item>
 		</ion-list>
 		<ion-list no-lines class="forget-remember-area m-0">
@@ -33,7 +33,7 @@
 
 		<ion-list no-lines>
 			<div>
-				<button ion-button class="btn-primary" (click)="doLogin()" block>LOGIN</button>
+				<button ion-button class="btn-primary" [disabled]="!loginForm.valid" (click)="doLogin(form.value)" block>LOGIN</button>
         <p class=" text-center text-dark-brown font-weight-medium">OR </p>
         <button ion-button class="btn-primary btn-fb" block><ion-icon name="logo-facebook"></ion-icon> Connect With Facebook</button>
         <button ion-button class="btn-primary btn-twitter" block><ion-icon name="logo-twitter"></ion-icon> Connect With Twitter</button>

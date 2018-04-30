@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
-
-//import { User } from '../../providers';
-//import { MainPage } from '../';
+import { IonicPage, NavController, ToastController, AlertController} from 'ionic-angular';
+import { AuthServiceProvider, ResponseMessage } from '../../providers';
+import { FormControl, FormBuilder, Validators, FormGroup, AbstractControl, FormArray } from '@angular/forms';
+import { Device } from '@ionic-native/device';
 
 @IonicPage()
 @Component({
@@ -11,44 +11,100 @@ import { IonicPage, NavController, ToastController } from 'ionic-angular';
   templateUrl: 'login.html'
 })
 export class LoginPage {
-  // The account fields for the login form.
-  // If you're using the username field with or without email, make
-  // sure to add it to the type
-  account: { email: string, password: string } = {
-    email: 'test@example.com',
-    password: 'test'
-  };
 
-  // Our translated text strings
+  private form: FormGroup;
+  public email: AbstractControl;
+  public password: AbstractControl;
   private loginErrorString: string;
+  private responseData: any;
 
-  constructor(public navCtrl: NavController,
-    //public user: User,
+  constructor(
+    public navCtrl: NavController,
+    public userService: AuthServiceProvider,
     public toastCtrl: ToastController,
-    public translateService: TranslateService) {
-
-    this.translateService.get('LOGIN_ERROR').subscribe((value) => {
-      this.loginErrorString = value;
-    })
+    private fbuilder: FormBuilder,
+    public alertCtrl: AlertController,
+    public jsonErrMsg: ResponseMessage,
+    //private device: Device
+  ) {
+    this.form = fbuilder.group({
+      'email': ['', Validators.compose([Validators.required,Validators.email])],
+      'password': ['', Validators.compose([Validators.required])],
+    });
+    this.email = this.form.controls['email'];
+    this.password = this.form.controls['password'];
   }
 
   // Attempt to login in through our User service
   doLogin() {
-    /*this.user.login(this.account).subscribe((resp) => {
-      this.navCtrl.push(MainPage);
-    }, (err) => {
-      this.navCtrl.push(MainPage);
-      // Unable to log in
+    
+
+    let CheckvalidEmail = this.email.value.toString();
+    let isValidEmail = this.validateEmail(CheckvalidEmail);
+    if (this.form.valid && isValidEmail) {
+      let signinJsonData={
+        "email": this.email.value.toString(),
+        "password": this.password.value.toString(),
+        //"deviceToken": this.device.uuid,
+        //"deviceType": this.device.platform
+      };
+      this.userService.postData(signinJsonData,'Customers/login').then((result) => {
+        //console.log(result);
+        this.responseData = result;
+        if(this.responseData.id){
+          localStorage.setItem('userData', JSON.stringify(this.responseData));
+          localStorage.setItem('isUserLogedin', '1');
+          let toast = this.toastCtrl.create({
+            message: 'You have successfully login.',
+            duration: 4000,
+            position: 'top'
+          });
+          toast.present();
+          this.navCtrl.setRoot('WelcomePage');
+        }else{
+          let alert = this.alertCtrl.create({
+            title: 'Error!',
+            subTitle: 'Something wrong.Please try again.' ,
+            buttons: ['Ok']
+          });
+          alert.present();
+        }
+      }, (err) => {
+        let alert = this.alertCtrl.create({
+          title: 'Error!',
+          subTitle: this.jsonErrMsg.messageData(err),
+          buttons: ['Ok']
+        });
+        alert.present();
+      });
+    }else if(!isValidEmail){
+      let alert = this.alertCtrl.create({
+        title: 'Error!',
+        subTitle: 'Please enter valid email',
+        buttons: ['Ok']
+      });
+      alert.present();
+    }else{
       let toast = this.toastCtrl.create({
-        message: this.loginErrorString,
+        message: 'You enter wrong email and password',
         duration: 3000,
         position: 'top'
       });
       toast.present();
-    });*/
+    }
+  }
+
+  public validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
   }
 
   public gotoSignupPage(){
     this.navCtrl.push('SignupPage');
+  }
+
+  forgotpassword(){
+    //this.navCtrl.push('ForgotPasswordPage');
+    //his.navCtrl.setRoot('ForgotPasswordPage');
   }
 }

@@ -14,10 +14,10 @@
 
 <ion-header class="header-tab-area">
 	<ul>
-		<!--<li><ion-icon name="md-add-circle"></ion-icon>Create Post</li>
-		<li><ion-icon name="md-settings"></ion-icon>Settings</li>-->
-		<li (click)="signup()"><ion-icon name="md-add-circle"></ion-icon>SignUp</li>
-		<li (click)="login()"><ion-icon name="md-log-in"></ion-icon>Login</li>
+		<li *ngIf="isUserLogin"><ion-icon name="md-add-circle"></ion-icon>Create Post</li>
+		<li *ngIf="isUserLogin" (click)="userLogout()"><ion-icon name="md-settings"></ion-icon>Logout</li>
+		<li (click)="signup()" *ngIf="!isUserLogin"><ion-icon name="md-add-circle"></ion-icon>SignUp</li>
+		<li (click)="login()"  *ngIf="!isUserLogin"><ion-icon name="md-log-in"></ion-icon>Login</li>
 	</ul>
 </ion-header>
 
@@ -35,10 +35,10 @@
 <ion-footer class="footer-tab-custom">
 	<ul>
 		<li (click)="home()" class="active"><img src="../../assets/imgs/home-active.png"><span>Home</span></li>
-		<li (click)="group()" class=""><img src="../../assets/imgs/group.png"><span>Group</span></li>
-		<li (click)="user()" class=""><img src="../../assets/imgs/user.png"><span>User</span></li>
-		<li (click)="post()" class=""><img src="../../assets/imgs/post.png"><span>Post</span></li>
-		<li (click)="event()" class=""><img src="../../assets/imgs/event.png"><span>Events</span></li>
+		<li class=""><img src="../../assets/imgs/group.png"><span>Group</span></li>
+		<li class=""><img src="../../assets/imgs/user.png"><span>User</span></li>
+		<li class=""><img src="../../assets/imgs/post.png"><span>Post</span></li>
+		<li class=""><img src="../../assets/imgs/event.png"><span>Events</span></li>
 	</ul>
 </ion-footer>
   

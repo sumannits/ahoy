@@ -3,7 +3,7 @@ import {Headers, Http, Response, URLSearchParams  } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from 'ionic-angular';
-let apiUrl = 'http://111.93.169.90/team2/buyfirst/';
+let apiUrl = 'http://192.168.1.68:3000/api/';
 /*
   Generated class for the AuthServiceProvider provider.
 
@@ -23,10 +23,15 @@ export class AuthServiceProvider {
     });
     
     return new Promise((resolve, reject) => {
-      let headers = new Headers();
+      //let headers = new Headers();
+      //headers.append("Content-Type","application/json");
+      const headerDict = {
+        'Content-Type': 'application/json',
+      }
+      const requestOptions = {                                                                    headers: new Headers(headerDict), 
+      };
 
-      this.http.post(apiUrl + type, JSON.stringify(credentials))
-        .subscribe(res => {
+      this.http.post(apiUrl + type, JSON.stringify(credentials),requestOptions).subscribe(res => {
           //console.log(res);
           resolve(res.json());
           loading.dismiss();
@@ -36,7 +41,6 @@ export class AuthServiceProvider {
           loading.dismiss();
         });
     });
-
   }
 
 
@@ -46,10 +50,14 @@ export class AuthServiceProvider {
     });
     //console.log(type);
     return new Promise((resolve, reject) => {
-      let headers = new Headers();
+      //let headers = new Headers();
+      const headerDict = {
+        'Content-Type': 'application/json',
+      }
+      const requestOptions = {                                                                    headers: new Headers(headerDict), 
+      };
 
-      this.http.get(apiUrl + type)
-        .subscribe(res => {
+      this.http.get(apiUrl + type,requestOptions).subscribe(res => {
           resolve(res.json());
           loading.dismiss();
         }, (err) => {

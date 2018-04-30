@@ -2,11 +2,12 @@
   <div class="logo">
     <h2>Sign Up</h2>
   </div>
-  <form [formGroup]="form" (ngSubmit)="doSignup(form.value)"  #signupForm="ngForm">
+  <form [formGroup]="form" #signupForm="ngForm">
 		<ion-list class="m-0" *ngIf="!isNextFrm">
 			<ion-item>
         <ion-label fixed><ion-icon name="md-person"></ion-icon></ion-label>
 				<ion-input type="text" placeholder="Name" [formControl]="username" autocapitalize="off"></ion-input>
+				<!--<p *ngIf="form.controls['username'].errors && !form.controls['username'].valid" class="text-danger" padding>Email is not valid.</p>-->
 			</ion-item>
 			<ion-item>
         <ion-label fixed><ion-icon name="ios-mail"></ion-icon></ion-label>
@@ -21,18 +22,35 @@
 				<ion-input type="password" placeholder="Confirm Password" [formControl]="cpassword"  name="cpassword" reverse="false" autocapitalize="off" validateEqual="password"></ion-input>
 			</ion-item>
 		</ion-list>
-    <ion-list class="m-0" *ngIf="isNextFrm">
-      <a class="text-dark-brown add-interest">  <ion-icon name="ios-add-circle-outline"></ion-icon>  Add Interested</a>
-			<ion-item>
+		<ion-list class="m-0" *ngIf="isNextFrm">
+    <!--<ion-list class="m-0">-->
+      <a class="text-dark-brown add-interest" (click)="addNewInputField()">  <ion-icon name="ios-add-circle-outline"></ion-icon>  Add Interested</a>
+			<!--<ion-item>
 				<ion-input type="text" placeholder="Type your interest"></ion-input>
-			</ion-item>
+			</ion-item>-->
+
+				<div formArrayName="interested" margin-bottom>
+            <section
+               [formGroupName]="i"
+               *ngFor="let tech of form.controls.interested.controls; let i = index">
+               <ion-item-group>
+               	  <ion-item>
+                     <ion-input type="text" maxlength="50" formControlName="name" placeholder="Type your interest"></ion-input>
+                  </ion-item>
+                  <span  float-right ion-button icon-left clear *ngIf="form.controls.interested.length > 1" (click)="removeInputField(i)">
+                     <ion-icon name="close"></ion-icon>
+                     Remove
+                  </span>
+               </ion-item-group>
+            </section>
+         </div>
     </ion-list>
         
 		<ion-list no-lines>
 			<div>
         <button *ngIf="!isNextFrm" ion-button class="btn-primary" [disabled]="!signupForm.valid || !checkEmailExist" (click)="gotoNextSignup()" block>Next</button>
         <div class="sign-btn" *ngIf="isNextFrm">
-          <button ion-button class="btn-primary" (click)="doSignup()" block>Sign up</button>
+          <button ion-button class="btn-primary" (click)="doSignup(form.value)" block>Sign up</button>
         </div>
         <p class=" text-center text-dark-brown font-weight-medium">OR </p>
         <button *ngIf="!isNextFrm" ion-button class="btn-primary btn-fb" block><ion-icon name="logo-facebook"></ion-icon> Connect With Facebook</button>

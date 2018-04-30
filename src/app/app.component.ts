@@ -38,17 +38,17 @@ export class MyApp {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       const loguser = JSON.parse(localStorage.getItem('userData'));
-      /*if(loguser){
-        this.rootPage = 'WelcomePage';
-        this.profile_image = loguser.profile_image;
-        this.name = loguser.first_name + ' ' + loguser.last_name;
+      if(loguser){
+        // this.rootPage = 'WelcomePage';
+        // this.profile_image = loguser.profile_image;
+        // this.name = loguser.first_name + ' ' + loguser.last_name;
         this.isloggedin = true;
       }else{
-        this.rootPage = 'WelcomePage';
-        this.profile_image = 'assets/img/default.jpeg';
-        this.name = '';
+        // this.rootPage = 'WelcomePage';
+        // this.profile_image = 'assets/img/default.jpeg';
+        // this.name = '';
         this.isloggedin = false;
-      }*/
+      }
       this.nav.setRoot('WelcomePage');
     });
     //this.initTranslate();
@@ -124,12 +124,15 @@ export class MyApp {
 
   public logout(){
     localStorage.clear();
-    this.profile_image = 'assets/img/default.jpeg';
-    this.name = '';
+    // this.profile_image = 'assets/img/default.jpeg';
+    // this.name = '';
     this.isloggedin = false;
+    // this.nav.setRoot('LoginPage');
+    localStorage.removeItem("isUserLogedin");
+    localStorage.removeItem("userData");
     this.nav.setRoot('LoginPage');
   }
-
+ 
   public goToDestinationFromSidebar(location){
     if(location==0){
       this.nav.setRoot('ProfilePage');
