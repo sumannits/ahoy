@@ -9,7 +9,7 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { AuthServiceProvider } from '../providers';
+import { AuthServiceProvider,ResponseMessage } from '../providers';
 import { MyApp } from './app.component';
 //import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
 
@@ -66,6 +66,7 @@ export function createTranslateLoader(http: HttpClient) {
   ],
   providers: [
     AuthServiceProvider,
+    ResponseMessage,
     Camera,
     SplashScreen,
     StatusBar,

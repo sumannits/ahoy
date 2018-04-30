@@ -13,7 +13,7 @@ import { IonicPage, NavController } from 'ionic-angular';
   templateUrl: 'welcome.html'
 })
 export class WelcomePage {
-
+  public isUserLogin:string=localStorage.getItem("isUserLogedin");
   constructor(public navCtrl: NavController) { }
 
   login() {
@@ -26,5 +26,11 @@ export class WelcomePage {
 
   public home() {
     this.navCtrl.push('WelcomePage');
+  }
+  
+  public userLogout() {
+    localStorage.clear();
+    localStorage.removeItem("isUserLogedin");
+    localStorage.removeItem("userData");
   }
 }
