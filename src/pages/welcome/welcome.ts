@@ -25,12 +25,15 @@ export class WelcomePage {
   }
 
   public home() {
-    this.navCtrl.push('WelcomePage');
+    //this.navCtrl.push('WelcomePage');
+    this.navCtrl.setRoot('WelcomePage');
   }
   
   public userLogout() {
     localStorage.clear();
     localStorage.removeItem("isUserLogedin");
     localStorage.removeItem("userData");
+    localStorage.removeItem("userPrfDet");
+    this.navCtrl.push('LoginPage');
   }
 }

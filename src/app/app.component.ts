@@ -39,16 +39,30 @@ export class MyApp {
       this.splashScreen.hide();
       const loguser = JSON.parse(localStorage.getItem('userData'));
       if(loguser){
+        const loguserDet = JSON.parse(localStorage.getItem('userPrfDet'));
+        //console.log(loguserDet);
+        if(loguserDet.image){
+          this.profile_image = loguserDet.image;
+        }else{
+          this.profile_image = 'assets/img/default.jpeg';
+        }
+        if(loguserDet.name){
+          let userFname= loguserDet.name.split(" ");
+          if(userFname[0]){
+            this.user_fname = userFname[0];
+          }else if(userFname[1]){
+            this.user_fname = userFname[1];
+          }
+        }
         // this.rootPage = 'WelcomePage';
-        // this.profile_image = loguser.profile_image;
-        // this.name = loguser.first_name + ' ' + loguser.last_name;
         this.isloggedin = true;
       }else{
         // this.rootPage = 'WelcomePage';
-        // this.profile_image = 'assets/img/default.jpeg';
-        // this.name = '';
+        this.profile_image = 'assets/img/default.jpeg';
+        this.user_fname = '';
         this.isloggedin = false;
       }
+      //console.log(this.isloggedin);
       this.nav.setRoot('WelcomePage');
     });
     //this.initTranslate();
@@ -58,10 +72,9 @@ export class MyApp {
       { title: 'Welcome Page',icon:'people',component: 'WelcomePage'},
       { title: 'Signup Page', icon: 'people', component: 'SignupPage' },
       { title: 'Login Page', icon: 'key', component: 'LoginPage' },
-      { title: 'Profile Page', icon: 'key', component: 'ProfilePage' },
-      //{ title: 'ForgotPassword Page', icon: 'key', component: 'ForgotPasswordPage' },
-      //{ title: 'NotificationsPage Page', icon: 'key', component: 'NotificationsPage' },
-      //{ title: 'EditProfilePage Page', icon: 'key', component: 'EditProfilePage' },
+      //{ title: 'Profile Page', icon: 'key', component: 'ProfilePage' },
+      { title: 'Settings Page', icon: 'key', component: 'SettingsPage' },
+      { title: 'Editprofile Page', icon: 'key', component: 'EditprofilePage' },
       //{ title: 'InboxPage Page', icon: 'key', component: 'InboxPage' },
       //{ title: 'NotificationSettings Page', icon: 'key', component: 'NotificationSettingsPage' }
     ];
@@ -130,6 +143,7 @@ export class MyApp {
     // this.nav.setRoot('LoginPage');
     localStorage.removeItem("isUserLogedin");
     localStorage.removeItem("userData");
+    localStorage.removeItem("userPrfDet");
     this.nav.setRoot('LoginPage');
   }
  
@@ -143,11 +157,9 @@ export class MyApp {
     if(location==2){
       this.nav.setRoot('WelcomePage');
     }
-    if(location==4){
-        this.nav.setRoot('InboxPage');
-    }
+    
     if(location==7){
-    this.nav.setRoot('EditProfilePage');
+    this.nav.push('EditprofilePage');
     }
     /*if(location==8){
     this.nav.setRoot('ChangePasswordPage');

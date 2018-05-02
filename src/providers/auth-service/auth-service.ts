@@ -66,5 +66,32 @@ export class AuthServiceProvider {
           loading.dismiss();
         });
     });
-  }  
+  } 
+  
+  patchData(credentials, type) {
+    let loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+    
+    return new Promise((resolve, reject) => {
+      //let headers = new Headers();
+      //headers.append("Content-Type","application/json");
+      const headerDict = {
+        'Content-Type': 'application/json',
+      }
+      const requestOptions = {                                                                    headers: new Headers(headerDict), 
+      };
+
+      this.http.patch(apiUrl + type, JSON.stringify(credentials),requestOptions).subscribe(res => {
+          //console.log(res);
+          resolve(res.json());
+          loading.dismiss();
+        }, (err) => {
+          //console.log(err);
+          reject(err);
+          loading.dismiss();
+        });
+    });
+  }
+
 }
