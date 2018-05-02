@@ -52,6 +52,17 @@ export class LoginPage {
         //console.log(result);
         this.responseData = result;
         if(this.responseData.id){
+          let userId= this.responseData.userId
+          this.userService.getData('Customers/'+userId).then((result) => {
+            localStorage.setItem('userPrfDet', JSON.stringify(result));
+          }, (err) => {
+            let alert = this.alertCtrl.create({
+              title: 'Error!',
+              subTitle: this.jsonErrMsg.messageData(err),
+              buttons: ['Ok']
+            });
+            alert.present();
+          });  
           localStorage.setItem('userData', JSON.stringify(this.responseData));
           localStorage.setItem('isUserLogedin', '1');
           let toast = this.toastCtrl.create({

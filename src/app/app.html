@@ -2,9 +2,9 @@
     <ion-header class="sidebar-header">
       <ion-item>
         <ion-thumbnail item-start>
-          <!--<img src="{{profile_image}}">-->
+          <img src="{{profile_image}}">
         </ion-thumbnail>
-        <h2>Suman </h2>
+        <h2> {{user_fname}} </h2>
       </ion-item>
     </ion-header>
     
@@ -22,7 +22,7 @@
         </button>
     </ion-list>
     <ion-list *ngIf="isloggedin == true"> 
-        <button ion-item menuClose icon-start>
+        <button ion-item menuClose icon-start (click)="goToDestinationFromSidebar('7')">
             <ion-icon ios="ios-briefcase" md="md-briefcase" item-start></ion-icon>
             Edit Profile
         </button>
