@@ -55,6 +55,15 @@ export class LoginPage {
           let userId= this.responseData.userId
           this.userService.getData('Customers/'+userId).then((result) => {
             localStorage.setItem('userPrfDet', JSON.stringify(result));
+            localStorage.setItem('userData', JSON.stringify(this.responseData));
+            localStorage.setItem('isUserLogedin', '1');
+            let toast = this.toastCtrl.create({
+              message: 'You have successfully login.',
+              duration: 4000,
+              position: 'top'
+            });
+            toast.present();
+            this.navCtrl.setRoot('WelcomePage');
           }, (err) => {
             let alert = this.alertCtrl.create({
               title: 'Error!',
@@ -63,15 +72,6 @@ export class LoginPage {
             });
             alert.present();
           });  
-          localStorage.setItem('userData', JSON.stringify(this.responseData));
-          localStorage.setItem('isUserLogedin', '1');
-          let toast = this.toastCtrl.create({
-            message: 'You have successfully login.',
-            duration: 4000,
-            position: 'top'
-          });
-          toast.present();
-          this.navCtrl.setRoot('WelcomePage');
         }else{
           let alert = this.alertCtrl.create({
             title: 'Error!',

@@ -25,8 +25,9 @@ export class EditprofilePage {
   loading: Loading;
   private form: FormGroup;
   private responseData: any;
+  private responseDataAny: any;
   public userData:any;
-
+  public interestList = [];
   //public imageURI:any;
   //public imageFileName:any;
   //public currentName:any;
@@ -52,19 +53,83 @@ export class EditprofilePage {
     //   name: ['', Validators.required],
     //   phone: ['', Validators.pattern('[0-9]{10}')]
     // });
+    const loguserDet = JSON.parse(localStorage.getItem('userPrfDet'));
+    //console.log(loguserDet);
+    this.userData=loguserDet;
 
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z ]*')]),
       phone: new FormControl('', [Validators.required, Validators.pattern('[0-9]{10}')]),
-      image: new FormControl('')
+      image: new FormControl(''),
+      bio: new FormControl(''),
+      interested: fbuilder.array([ ])
     });
-    const loguserDet = JSON.parse(localStorage.getItem('userPrfDet'));
-    //console.log(loguserDet);
-    this.userData=loguserDet;
+    
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad EditprofilePage');
+    //console.log('ionViewDidLoad EditprofilePage');
+    this.getMyInterestList();
+  }
+
+  getMyInterestList() {
+    //let filterIntData={"user_id": this.userData.id};
+    let filterIntData = '{"where":{"user_id":'+this.userData.id+'}}';
+    this.userService.getData('CustomerInterests?filter='+filterIntData).then((result) => {
+      this.responseDataAny=result;
+      //console.log(result);
+      if(this.responseDataAny.length>0){
+        this.interestList=this.responseDataAny;
+        this.interestList.forEach(element => {
+          if(element.interest_text!=''){
+            this.editIntInputField(element);
+          }
+        });
+      }
+    }, (err) => {
+      // let alert = this.alertCtrl.create({
+      //   title: 'Error!',
+      //   subTitle: this.jsonErrMsg.messageData(err),
+      //   buttons: ['Ok']
+      // });
+      // alert.present();
+    });
+
+    
+    //console.log('ionViewDidLoad EditprofilePage');
+  }
+
+  initInterestedFields() : FormGroup{
+    let userId= this.userData.id;
+    return this.fbuilder.group({
+      interest_text : [''],
+      user_id : [userId],
+      interest_id : ['']
+        //name : ['', Validators.required]
+    });
+  }
+
+  initEditIntFields(element:any) : FormGroup{
+    return this.fbuilder.group({
+      interest_text : [element.interest_text],
+      user_id : [element.user_id],
+      interest_id : [element.interest_id]
+    });
+  }
+
+  editIntInputField(element:any) : void{
+    const control = <FormArray>this.form.controls.interested;
+    control.push(this.initEditIntFields(element));
+  }
+
+  addNewInputField() : void{
+    const control = <FormArray>this.form.controls.interested;
+    control.push(this.initInterestedFields());
+  }
+
+  removeInputField(i : number) : void{
+    const control = <FormArray>this.form.controls.interested;
+    control.removeAt(i);
   }
 
   updateDetails(data:any){
@@ -81,6 +146,16 @@ export class EditprofilePage {
         if(this.responseData.id){
           localStorage.setItem('userPrfDet', JSON.stringify(result));
           this.presentToast('Data updated successfully.');
+
+          if(data.interested.length>0){
+            let custIntJData={"interested":data.interested}
+            this.userService.postData(custIntJData,'CustomerInterests/insertInterest').then((result) => {
+             
+            }, (err) => {
+              
+            });
+          }
+          
           //this.navCtrl.setRoot('WelcomePage');
         }else{
           let alert = this.alertCtrl.create({

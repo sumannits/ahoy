@@ -27,7 +27,7 @@
       </ion-item>
 			<ion-item>
         <ion-label fixed><ion-icon name="call"></ion-icon></ion-label>
-        <ion-input type="text" placeholder="Phone No" [(ngModel)]="userData.phone" formControlName="phone" autocapitalize="off" ></ion-input>
+        <ion-input type="number" placeholder="Phone No" [(ngModel)]="userData.phone" formControlName="phone" autocapitalize="off" ></ion-input>
       </ion-item>
 
       <ion-item no-lines *ngIf="( form.get('phone').hasError('pattern') || form.get('phone').hasError('required') ) && form.get('phone').touched">
@@ -38,19 +38,47 @@
           Just use number only and number must be 10 digit.
         </div>
       </ion-item>
-
       <ion-item>
+        <ion-label fixed><ion-icon name="paper"></ion-icon></ion-label>
+        <ion-textarea placeholder="About Yourself" [(ngModel)]="userData.bio" formControlName="bio" autocapitalize="off" ></ion-textarea>
+      </ion-item>
+
+      <!--<ion-item>
         <ion-label fixed><ion-icon name="image"></ion-icon></ion-label>
         <p> Upload picture</p>
         <div><button ion-button color="btn-primary" (click)="presentActionSheet()">Get Image</button></div>
         
-      </ion-item>
+      </ion-item>-->
 
       <ion-item *ngIf="lastImage">
           <h4>Image Preview</h4>
           <img src="{{pathForImage(lastImage)}}" alt="Ionic File" width="300" />
       </ion-item>
 		</ion-list>
+
+    <ion-list class="mt-10">
+      <!--<ion-list class="m-0">-->
+        <a class="text-dark-brown add-interest" (click)="addNewInputField()">  <ion-icon name="ios-add-circle-outline"></ion-icon>  Add Interested</a>
+        <!--<ion-item>
+          <ion-input type="text" placeholder="Type your interest"></ion-input>
+        </ion-item>-->
+  
+          <div formArrayName="interested" margin-bottom>
+              <section
+                 [formGroupName]="i"
+                 *ngFor="let tech of form.controls.interested.controls; let i = index">
+                 <ion-item-group>
+                     <ion-item>
+                       <ion-input type="text" maxlength="50" formControlName="interest_text" placeholder="Type your interest"></ion-input>
+                    </ion-item>
+                    <span  float-right ion-button icon-left clear *ngIf="form.controls.interested.length > 1" (click)="removeInputField(i)">
+                       <ion-icon name="close"></ion-icon>
+                       Remove
+                    </span>
+                 </ion-item-group>
+              </section>
+           </div>
+      </ion-list>
 
 		<ion-list no-lines>
 			<div class="mt-10">

@@ -31,6 +31,7 @@ export class SignupPage {
   private busy: boolean;
   private isNextFrm:boolean=false;
   private checkEmailExist:boolean=true;
+  public interestList = [];
 
   public email: AbstractControl;
   public password: AbstractControl;
@@ -98,6 +99,26 @@ export class SignupPage {
         //console.log(result);
         this.responseData = result;
         if(this.responseData.id){
+          if(this.form.controls['interested'].value.length>0){
+            this.form.controls['interested'].value.forEach(element => {
+              if(element.name!=''){
+                let userInterestList={
+                  "interest_text" : element.name,
+                  "user_id" : this.responseData.id,
+                  "interest_id" : ""
+                };
+                this.interestList.push(userInterestList);
+              }
+            });
+            
+            let custIntJData={"interested":this.interestList}
+            this.userService.postData(custIntJData,'CustomerInterests/insertInterest').then((result) => {
+             
+            }, (err) => {
+              
+            });
+          }
+          
           let toast = this.toastCtrl.create({
             message: 'You have successfully signup.Please Login.',
             duration: 4000,
