@@ -1,4 +1,4 @@
-<ion-menu [content]="content" id="menuside">
+<ion-menu [content]="content" id="menuside" (ionOpen)="menuOpened()" >
     <ion-header class="sidebar-header">
       <ion-item>
         <ion-thumbnail item-start>
@@ -15,13 +15,13 @@
             Home
         </button>
     </ion-list>
-    <ion-list *ngIf="isloggedin == true"> 
+    <ion-list *ngIf="isloggedin"> 
         <button ion-item menuClose icon-start>
             <ion-icon ios="ios-settings" md="md-settings" item-start></ion-icon>
             Account-Settings
         </button>
     </ion-list>
-    <ion-list *ngIf="isloggedin == true"> 
+    <ion-list *ngIf="isloggedin"> 
         <button ion-item menuClose icon-start (click)="goToDestinationFromSidebar('7')">
             <ion-icon ios="ios-briefcase" md="md-briefcase" item-start></ion-icon>
             Edit Profile
@@ -30,17 +30,17 @@
    
    
     <ion-list>
-        <button *ngIf="isloggedin == true" ion-item menuClose (click)="logout()" icon-start>
+        <button *ngIf="isloggedin" ion-item menuClose (click)="logout()" icon-start>
             <ion-icon name="md-log-out" item-start></ion-icon>
             Logout
         </button>
-        <button *ngIf="isloggedin == false" ion-item menuClose (click)="login()" icon-start>
+        <button *ngIf="!isloggedin" ion-item menuClose (click)="login()" icon-start>
             <ion-icon name="md-log-in" item-start></ion-icon>
             Login
         </button>
     </ion-list>
     <ion-list>
-        <button *ngIf="isloggedin == false" ion-item menuClose (click)="goToDestinationFromSidebar('16')" icon-start>
+        <button *ngIf="!isloggedin" ion-item menuClose (click)="goToDestinationFromSidebar('16')" icon-start>
             <ion-icon name="md-add-circle" item-start></ion-icon>
             SignUp
         </button>

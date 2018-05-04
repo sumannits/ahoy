@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
-
+import { MyApp } from '../../app/app.component';
 /**
  * The Welcome Page is a splash page that quickly describes the app,
  * and then directs the user to create an account or log in.
@@ -14,7 +14,8 @@ import { IonicPage, NavController } from 'ionic-angular';
 })
 export class WelcomePage {
   public isUserLogin:string=localStorage.getItem("isUserLogedin");
-  constructor(public navCtrl: NavController) { }
+  public loguser:any;
+  constructor(public navCtrl: NavController,private myApp:MyApp) { }
 
   login() {
     this.navCtrl.push('LoginPage');
@@ -22,6 +23,11 @@ export class WelcomePage {
 
   signup() {
     this.navCtrl.push('SignupPage');
+  }
+
+  ionViewDidLoad() {
+    //this.loguser = JSON.parse(localStorage.getItem('userData'));
+    this.myApp.menuOpened();
   }
 
   public home() {

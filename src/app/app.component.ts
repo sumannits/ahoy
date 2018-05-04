@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { Config, Nav, Platform, LoadingController ,Events, ToastController } from 'ionic-angular';
+import { Config, Nav, Platform, LoadingController ,Events, ToastController, MenuController } from 'ionic-angular';
 import { AuthServiceProvider } from '../providers';
 //import { FirstRunPage } from '../pages';
 
@@ -19,6 +19,8 @@ export class MyApp {
   public name:string = '';
   public profile_image:string='';
   public isloggedin : boolean = false;
+  public loguser:any;
+  public loguserDet:any;
   
   constructor(
     private translate: TranslateService, 
@@ -29,7 +31,7 @@ export class MyApp {
     private splashScreen: SplashScreen,
     //public toastCtrl:ToastController,
     public loadingCtrl: LoadingController,
-    //public events: Events,
+    public menuCtrl: MenuController
   ) {
     this.presentLoadingCustom();
     platform.ready().then(() => {
@@ -37,32 +39,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      const loguser = JSON.parse(localStorage.getItem('userData'));
-      if(loguser){
-        const loguserDet = JSON.parse(localStorage.getItem('userPrfDet'));
-        //console.log(loguserDet);
-        if(loguserDet.image){
-          this.profile_image = loguserDet.image;
-        }else{
-          this.profile_image = 'assets/img/default.jpeg';
-        }
-        if(loguserDet.name){
-          let userFname= loguserDet.name.split(" ");
-          if(userFname[0]){
-            this.user_fname = userFname[0];
-          }else if(userFname[1]){
-            this.user_fname = userFname[1];
-          }
-        }
-        // this.rootPage = 'WelcomePage';
-        this.isloggedin = true;
-      }else{
-        // this.rootPage = 'WelcomePage';
-        this.profile_image = 'assets/img/default.jpeg';
-        this.user_fname = '';
-        this.isloggedin = false;
-      }
-      //console.log(this.isloggedin);
+      this.menuOpened();
       this.nav.setRoot('WelcomePage');
     });
     //this.initTranslate();
@@ -111,9 +88,40 @@ export class MyApp {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-    });
+    });  
   }
 
+  menuOpened(){
+      this.loguser = JSON.parse(localStorage.getItem('userData'));
+      //console.log(this.loguser);
+      if(this.loguser){
+        this.isloggedin = true;
+        this.loguserDet = JSON.parse(localStorage.getItem('userPrfDet'));
+        if(this.loguserDet.image){
+          this.profile_image = this.loguserDet.image;
+        }else{
+          this.profile_image = 'assets/img/default.jpeg';
+        }
+        //this.profile_image = 'assets/img/default.jpeg';
+        if(this.loguserDet.name){
+          let userFname= this.loguserDet.name.split(" ");
+          if(userFname[0]){
+            this.user_fname = userFname[0];
+          }else if(userFname[1]){
+            this.user_fname = userFname[1];
+          }
+        }
+        // this.rootPage = 'WelcomePage';
+        
+      }else{
+        // this.rootPage = 'WelcomePage';
+        this.profile_image = 'assets/img/default.jpeg';
+        this.user_fname = '';
+        this.isloggedin = false;
+      }
+    
+      //console.log(this.isloggedin);
+  }
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario

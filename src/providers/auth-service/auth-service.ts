@@ -3,7 +3,8 @@ import {Headers, Http, Response, URLSearchParams  } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { HttpClient } from '@angular/common/http';
 import { LoadingController } from 'ionic-angular';
-let apiUrl = 'http://192.168.1.68:3000/api/';
+//let apiUrl = 'http://192.168.1.68:3000/api/';
+let apiUrl = 'http://111.93.169.90:3006/api/';
 /*
   Generated class for the AuthServiceProvider provider.
 
