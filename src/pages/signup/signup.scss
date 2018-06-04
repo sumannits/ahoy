@@ -66,4 +66,8 @@ page-signup {
       .sign-btn{
         margin: 60px 0;
       }
+      .list_height{
+        max-height: 200px;
+        overflow-y: scroll;
+      }
 }

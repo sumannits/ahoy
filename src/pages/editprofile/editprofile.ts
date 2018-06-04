@@ -6,7 +6,7 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { FilePath } from '@ionic-native/file-path';
 import { File } from '@ionic-native/file';
-
+import * as _ from 'lodash';
 /**
  * Generated class for the EditprofilePage page.
  *
@@ -28,6 +28,12 @@ export class EditprofilePage {
   private responseDataAny: any;
   public userData:any;
   public interestList = [];
+  public InterestDropdownList = [];
+  public mySelectedIntList = [];
+  public mySelectedIntNameList:any;
+  public selectedIntItems = [];
+  public responseIntData: any;
+  public addNewInt:boolean = false;
   //public imageURI:any;
   //public imageFileName:any;
   //public currentName:any;
@@ -68,8 +74,9 @@ export class EditprofilePage {
   }
 
   ionViewDidLoad() {
-    //console.log('ionViewDidLoad EditprofilePage');
+    
     this.getMyInterestList();
+    this.getInterestList();
   }
 
   getMyInterestList() {
@@ -77,12 +84,12 @@ export class EditprofilePage {
     let filterIntData = '{"where":{"user_id":'+this.userData.id+'}}';
     this.userService.getData('CustomerInterests?filter='+filterIntData).then((result) => {
       this.responseDataAny=result;
+      this.mySelectedIntNameList = result;
       //console.log(result);
       if(this.responseDataAny.length>0){
-        this.interestList=this.responseDataAny;
-        this.interestList.forEach(element => {
-          if(element.interest_text!=''){
-            this.editIntInputField(element);
+        this.responseDataAny.forEach(element => {
+          if(element.interestId!=''){
+            this.mySelectedIntList.push(element.interestId);
           }
         });
       }
@@ -123,8 +130,9 @@ export class EditprofilePage {
   }
 
   addNewInputField() : void{
-    const control = <FormArray>this.form.controls.interested;
-    control.push(this.initInterestedFields());
+    // const control = <FormArray>this.form.controls.interested;
+    // control.push(this.initInterestedFields());
+    this.addNewInt = !this.addNewInt;
   }
 
   removeInputField(i : number) : void{
@@ -133,6 +141,11 @@ export class EditprofilePage {
   }
 
   updateDetails(data:any){
+    let filterIntData = _.map(this.InterestDropdownList, function(item) {
+        if (item.checked == true) return item;
+    });
+    filterIntData = _.without(filterIntData, undefined)
+
     if(this.form.valid){
       this.lastImage = '';
       if(this.lastImage!=''){
@@ -147,14 +160,35 @@ export class EditprofilePage {
           localStorage.setItem('userPrfDet', JSON.stringify(result));
           this.presentToast('Data updated successfully.');
 
-          if(data.interested.length>0){
-            let custIntJData={"interested":data.interested}
+
+          if(filterIntData.length>0){
+            filterIntData.forEach(element => {
+              if(element.name!=''){
+                let userInterestList={
+                  "interest_text" : element.name,
+                  "user_id" : this.userData.id,
+                  "interestId" : element.id
+                };
+                this.selectedIntItems.push(userInterestList);
+              }
+            });
+            
+            let custIntJData={"interested":this.selectedIntItems}
             this.userService.postData(custIntJData,'CustomerInterests/insertInterest').then((result) => {
              
             }, (err) => {
               
             });
           }
+
+          // if(data.interested.length>0){
+          //   let custIntJData={"interested":data.interested}
+          //   this.userService.postData(custIntJData,'CustomerInterests/insertInterest').then((result) => {
+             
+          //   }, (err) => {
+              
+          //   });
+          // }
           
           //this.navCtrl.setRoot('WelcomePage');
         }else{
@@ -307,4 +341,64 @@ export class EditprofilePage {
     });
   }
 
+  public getInterestList(){
+    let filterUserData = '{"where":{"is_active":true}}';
+    this.userService.getData('interests?filter=' + filterUserData).then((result) => {
+      //console.log(result);
+      this.responseIntData = result;
+      if (this.responseIntData.length > 0) {
+        this.responseIntData.forEach((color: { name: string, id: number, description: string }) => {
+          let checkInt = _.includes(this.mySelectedIntList, color.id);
+          let checkedVal:boolean = false;
+          if(checkInt){
+            checkedVal= true;
+          }
+          //console.log(checkInt);
+          this.InterestDropdownList.push({
+            id: color.id,
+            name: color.name,
+            description: color.description,
+            checked:checkedVal
+          });
+        });
+        this.interestList = this.InterestDropdownList;
+        //console.log(this.InterestDropdownList);
+      }
+    }, (err) => {
+      let emailErrMsg= this.jsonErrMsg.messageData(err);
+      let alert = this.alertCtrl.create({
+        title: 'Error!',
+        subTitle: this.jsonErrMsg.messageData(err),
+        buttons: ['Ok']
+      });
+      alert.present();
+    });
+  }
+
+  public searchItems(ev: any) {
+    // set val to the value of the searchbar
+    const val = ev.target.value;
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() != '') {
+      this.InterestDropdownList=this.searchPipe(this.interestList, val);
+    }else{
+      this.InterestDropdownList = this.interestList;
+    }
+  }
+
+  public searchPipe(items, sdata){
+      const /** @type {?} */ toCompare = sdata.toLowerCase();
+      return items.filter(function (item) {
+          for (let /** @type {?} */ property in item) {
+            //console.log(item);
+              if (item[property] === null) {
+                  continue;
+              }
+              if (item[property].toString().toLowerCase().includes(toCompare)) {
+                  return true;
+              }
+          }
+          return false;
+      });
+  }
 }
