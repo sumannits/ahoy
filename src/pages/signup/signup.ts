@@ -4,7 +4,7 @@ import { IonicPage, NavController, ToastController, AlertController} from 'ionic
 import { AuthServiceProvider, ResponseMessage } from '../../providers';
 import { FormControl, FormBuilder, Validators, FormGroup, AbstractControl, FormArray } from '@angular/forms';
 import { Device } from '@ionic-native/device';
-
+import * as _ from 'lodash';
 
 function duplicatePassword(input: FormControl) {
   if (!this.input.root || !this.input.root.controls) {
@@ -33,11 +33,16 @@ export class SignupPage {
   private checkEmailExist:boolean=true;
   public interestList = [];
 
+  public InterestDropdownList = [];
+  public selectedIntItems = [];
+  public responseIntData: any;
+  public searchQuery: string = '';
+
   public email: AbstractControl;
   public password: AbstractControl;
   public cpassword: AbstractControl;
   public username: AbstractControl; 
-
+  
   constructor(public navCtrl: NavController,
     public userService: AuthServiceProvider,
     public toastCtrl: ToastController,
@@ -63,6 +68,7 @@ export class SignupPage {
     this.translateService.get('SIGNUP_ERROR').subscribe((value) => {
       this.signupErrorString = value;
     })
+    this.getInterestList();
   }
 
   initInterestedFields() : FormGroup{
@@ -83,7 +89,11 @@ export class SignupPage {
   }
 
   doSignup(val : any) {
-    if (this.form.valid) {
+    let filterIntData = _.map(this.InterestDropdownList, function(item) {
+        if (item.checked == true) return item;
+    });
+    filterIntData = _.without(filterIntData, undefined)
+    if (this.form.valid && filterIntData.length >0) {
       let signupJsonData={
         "name": this.username.value.toString(),
         //"username": this.username.value.toString(),
@@ -95,23 +105,24 @@ export class SignupPage {
         //"deviceToken": this.device.uuid,
         //"deviceType": this.device.platform
       };
+      
       this.userService.postData(signupJsonData,'Customers').then((result) => {
         //console.log(result);
         this.responseData = result;
         if(this.responseData.id){
-          if(this.form.controls['interested'].value.length>0){
-            this.form.controls['interested'].value.forEach(element => {
+          if(filterIntData.length>0){
+            filterIntData.forEach(element => {
               if(element.name!=''){
                 let userInterestList={
                   "interest_text" : element.name,
                   "user_id" : this.responseData.id,
-                  "interest_id" : ""
+                  "interestId" : element.id
                 };
-                this.interestList.push(userInterestList);
+                this.selectedIntItems.push(userInterestList);
               }
             });
             
-            let custIntJData={"interested":this.interestList}
+            let custIntJData={"interested":this.selectedIntItems}
             this.userService.postData(custIntJData,'CustomerInterests/insertInterest').then((result) => {
              
             }, (err) => {
@@ -143,21 +154,13 @@ export class SignupPage {
         });
         alert.present();
       });
-
-      /*this.userService.signup(this.account).subscribe((resp) => {
-        this.navCtrl.push(MainPage);
-      }, (err) => {
-  
-        this.navCtrl.push(MainPage);
-  
-        // Unable to sign up
-        let toast = this.toastCtrl.create({
-          message: this.signupErrorString,
-          duration: 3000,
-          position: 'top'
-        });
-        toast.present();
-      });*/
+    }else{
+      let alert = this.alertCtrl.create({
+        title: 'Error!',
+        subTitle: 'Please select your interest.',
+        buttons: ['Ok']
+      });
+      alert.present();
     }
     //console.log(val);
     //console.log(val.interested);
@@ -221,4 +224,64 @@ export class SignupPage {
     }
     
   }
+
+  public getInterestList(){
+    let filterUserData = '{"where":{"is_active":true}}';
+    this.userService.getData('interests?filter=' + filterUserData).then((result) => {
+      //console.log(result);
+      this.responseIntData = result;
+      if (this.responseIntData.length > 0) {
+        this.responseIntData.forEach((color: { name: string, id: number, description: string }) => {
+          this.InterestDropdownList.push({
+            id: color.id,
+            name: color.name,
+            description: color.description,
+            checked:false
+          });
+        });
+        this.interestList = this.InterestDropdownList;
+        //console.log(this.InterestDropdownList);
+      }
+    }, (err) => {
+      let emailErrMsg= this.jsonErrMsg.messageData(err);
+      let alert = this.alertCtrl.create({
+        title: 'Error!',
+        subTitle: this.jsonErrMsg.messageData(err),
+        buttons: ['Ok']
+      });
+      alert.present();
+    });
+  }
+
+  public searchItems(ev: any) {
+    // set val to the value of the searchbar
+    const val = ev.target.value;
+
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() != '') {
+      this.InterestDropdownList=this.searchPipe(this.interestList, val);
+      // this.items = this.items.filter((item) => {
+      //   return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      // })
+    }else{
+      this.InterestDropdownList = this.interestList;
+    }
+  }
+
+  public searchPipe(items, sdata){
+    const /** @type {?} */ toCompare = sdata.toLowerCase();
+    return items.filter(function (item) {
+        for (let /** @type {?} */ property in item) {
+          //console.log(item);
+            if (item[property] === null) {
+                continue;
+            }
+            if (item[property].toString().toLowerCase().includes(toCompare)) {
+                return true;
+            }
+        }
+        return false;
+    });
+}
+
 }

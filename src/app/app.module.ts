@@ -14,6 +14,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { AuthServiceProvider,ResponseMessage } from '../providers';
 import { MyApp } from './app.component';
+//import { SelectSearchableModule } from 'ionic-select-searchable';
 //import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
 
 // The translate loader needs to know where to load i18n files
@@ -61,6 +62,7 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
+    //SelectSearchableModule
     //CloudModule.forRoot(cloudSettings)
   ],
   bootstrap: [IonicApp],

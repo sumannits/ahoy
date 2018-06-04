@@ -73,5 +73,8 @@ page-editprofile {
         font-size: 16px;
         ion-icon{margin-right: 5px;}
     }
-    
+    .list_height{
+        max-height: 200px;
+        overflow-y: scroll;
+    }
 }
