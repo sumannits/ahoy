@@ -77,4 +77,7 @@ page-editprofile {
         max-height: 200px;
         overflow-y: scroll;
     }
+    .custom-autocomplete__dropdown{
+        position: relative !important;
+    }
 }
