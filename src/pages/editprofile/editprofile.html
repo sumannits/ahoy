@@ -15,7 +15,7 @@
 		<ion-list class="m-0">
 			<ion-item>
         <ion-label fixed><ion-icon name="md-person"></ion-icon></ion-label>
-				<ion-input type="text" placeholder="Name" [(ngModel)]="userData.name" formControlName="name" autocapitalize="off"></ion-input>
+				<ion-input type="text" placeholder="Name" formControlName="name" autocapitalize="off"></ion-input>
       </ion-item>
       <ion-item no-lines *ngIf="( form.get('name').hasError('pattern') || form.get('name').hasError('required') ) && form.get('name').touched">
         <div class="error" *ngIf="form.get('name').hasError('required') && form.get('name').touched">
@@ -25,9 +25,13 @@
           Just use alphabet character
         </div>
       </ion-item>
+      <ion-item>
+          <ion-label fixed><ion-icon name="ios-mail"></ion-icon></ion-label>
+          <ion-input type="email" formControlName="email" readonly placeholder="Email"></ion-input>
+      </ion-item>
 			<ion-item>
         <ion-label fixed><ion-icon name="call"></ion-icon></ion-label>
-        <ion-input type="number" placeholder="Phone No" [(ngModel)]="userData.phone" formControlName="phone" autocapitalize="off" ></ion-input>
+        <ion-input type="number" placeholder="Phone No" formControlName="phone" autocapitalize="off" ></ion-input>
       </ion-item>
 
       <ion-item no-lines *ngIf="( form.get('phone').hasError('pattern') || form.get('phone').hasError('required') ) && form.get('phone').touched">
@@ -39,8 +43,12 @@
         </div>
       </ion-item>
       <ion-item>
+          <!--<ion-label fixed><ion-icon name="ios-pin"></ion-icon></ion-label>-->
+          <ng4geo-autocomplete [userSettings]="userSettings" (componentCallback)="autoCompleteCallback1($event)"></ng4geo-autocomplete>
+      </ion-item>
+      <ion-item>
         <ion-label fixed><ion-icon name="paper"></ion-icon></ion-label>
-        <ion-textarea placeholder="About Yourself" [(ngModel)]="userData.bio" formControlName="bio" autocapitalize="off" ></ion-textarea>
+        <ion-textarea placeholder="About Yourself" formControlName="bio" autocapitalize="off" ></ion-textarea>
       </ion-item>
 
       <!--<ion-item>

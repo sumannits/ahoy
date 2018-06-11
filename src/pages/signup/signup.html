@@ -12,7 +12,18 @@
 			<ion-item>
         <ion-label fixed><ion-icon name="ios-mail"></ion-icon></ion-label>
 				<ion-input type="email" placeholder="Email Address" [formControl]="email" autocapitalize="off"></ion-input>
-			</ion-item>
+      </ion-item>
+      <!--<ion-item>-->
+          <!--<ion-label fixed><ion-icon name="ios-pin"></ion-icon></ion-label>-->
+
+          <!--<ng4geo-autocomplete [userSettings]="userSettings" (componentCallback)="autoCompleteCallback1($event)"></ng4geo-autocomplete>-->
+
+        <!--<ion-label fixed><ion-icon name="ios-pin"></ion-icon></ion-label>
+        <ion-input type="text" placeholder="Search for a place" [(ngModel)]="query" [ngModelOptions]="{standalone: true}" (ionInput)="searchPlace()"></ion-input>-->
+        <!--<ion-searchbar [(ngModel)]="query" [ngModelOptions]="{standalone: true}" (ionInput)="searchPlace()" placeholder="Search for a place"></ion-searchbar>-->
+        
+      <!--</ion-item>-->
+      
 			<ion-item>
         <ion-label fixed><ion-icon name="md-lock"></ion-icon></ion-label>
 				<ion-input type="password" placeholder="Password" [formControl]="password" autocapitalize="off" validateEqual="cpassword" name="password" reverse="true"></ion-input>
@@ -24,46 +35,20 @@
 		</ion-list>
 		<ion-list class="m-0" *ngIf="isNextFrm">
         <ion-label>Select your interest</ion-label>
-        <ion-searchbar (ionInput)="searchItems($event)"></ion-searchbar>
+        <ion-searchbar (ionInput)="searchItems($event)" *ngIf="!interestCustTestSel"></ion-searchbar>
         <ion-list class="list_height">
           <ion-item *ngFor="let item of InterestDropdownList">
               <ion-label>{{ item.name }}</ion-label>
               <ion-checkbox [(ngModel)]="item.checked" [ngModelOptions]="{standalone: true}" ></ion-checkbox>
           </ion-item>
           <ion-item *ngIf="InterestDropdownList.length == 0">
-              <ion-label> No interest found.</ion-label>
-              
+              <ion-label> "{{interestNameTest}}" <a (click)="AddCustInt()" *ngIf="!interestCustTestSel"> Add interest</a> <a (click)="DeleteCustInt()" *ngIf="interestCustTestSel"> <ion-icon name="md-close-circle"></ion-icon> </a></ion-label>
           </ion-item>
         </ion-list>
 
     <!--<ion-list class="m-0">-->
       <!--<a class="text-dark-brown add-interest" (click)="addNewInputField()">  <ion-icon name="ios-add-circle-outline"></ion-icon>  Add Interested</a>-->
-          <!--<ion-label>Select your interest</ion-label>
-          <ion-searchbar (ionInput)="searchItems($event)"></ion-searchbar>
-          <ion-list>
-            <ion-item *ngFor="let item of InterestDropdownList">
-              {{ item.name }}
-            </ion-item>
-          </ion-list> --> 
-          
-			<!--<ion-item>-->
-          
-          <!--<ion-label>Select your interest</ion-label>
-          <ion-searchbar (ionInput)="searchItems($event)"></ion-searchbar>
-          <ion-list>
-            <ion-item *ngFor="let item of InterestDropdownList">
-              {{ item.name }}
-            </ion-item>
-          </ion-list> --> 
-        <!--<ion-label>Select your interest</ion-label>
-        <ion-searchbar name="countrysearch" (ngModelChange)="searchCountries($event)" placeholder="Serach for Countries"></ion-searchbar>
-        <ion-select [(ngModel)]="selectedIntItems" [ngModelOptions]="{standalone: true}" multiple="true">
-          <ion-option *ngFor="let intdata of InterestDropdownList" [value]="intdata.id">{{intdata.name}}</ion-option>
-        </ion-select>-->
-        <!--<ion-input type="text" placeholder="Type your interest"></ion-input>-->
-      <!--</ion-item>-->
-
-				<!--<div formArrayName="interested" margin-bottom>
+        <div formArrayName="interested" margin-bottom>
             <section
                [formGroupName]="i"
                *ngFor="let tech of form.controls.interested.controls; let i = index">
@@ -77,12 +62,12 @@
                   </span>
                </ion-item-group>
             </section>
-         </div>-->
+         </div>
     </ion-list>
         
 		<ion-list no-lines>
 			<div>
-        <button *ngIf="!isNextFrm" ion-button class="btn-primary" [disabled]="!signupForm.valid || !checkEmailExist" (click)="gotoNextSignup()" block>Next</button>
+        <button *ngIf="!isNextFrm" ion-button class="btn-primary" [disabled]="(!signupForm.valid || !checkEmailExist)" (click)="gotoNextSignup()" block>Next</button>
         <div class="sign-btn" *ngIf="isNextFrm">
           <button ion-button class="btn-primary" (click)="doSignup(form.value)" block>Sign up</button>
         </div>
