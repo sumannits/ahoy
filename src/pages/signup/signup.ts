@@ -425,8 +425,9 @@ export class SignupPage {
 
     // if the value is an empty string don't filter the items
     if (val && val.trim() != '') {
-      this.interestNameTest= val;
-      this.InterestDropdownList=this.searchPipe(this.interestList, val);
+      let trimVal =val.trim();
+      this.interestNameTest= trimVal;
+      this.InterestDropdownList=this.searchPipe(this.interestList, trimVal);
       // this.items = this.items.filter((item) => {
       //   return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
       // })
