@@ -37,12 +37,15 @@
         <ion-label>Select your interest</ion-label>
         <ion-searchbar (ionInput)="searchItems($event)" *ngIf="!interestCustTestSel"></ion-searchbar>
         <ion-list class="list_height">
+            <ion-item *ngIf="interestCustTestSel">
+                <ion-label> "{{interestNameTest}}"  <a (click)="DeleteCustInt()"> <ion-icon name="md-close-circle"></ion-icon> </a></ion-label>
+            </ion-item>
           <ion-item *ngFor="let item of InterestDropdownList">
               <ion-label>{{ item.name }}</ion-label>
               <ion-checkbox [(ngModel)]="item.checked" [ngModelOptions]="{standalone: true}" ></ion-checkbox>
           </ion-item>
           <ion-item *ngIf="InterestDropdownList.length == 0">
-              <ion-label> "{{interestNameTest}}" <a (click)="AddCustInt()" *ngIf="!interestCustTestSel"> Add interest</a> <a (click)="DeleteCustInt()" *ngIf="interestCustTestSel"> <ion-icon name="md-close-circle"></ion-icon> </a></ion-label>
+              <ion-label> "{{interestNameTest}}" <a (click)="AddCustInt()" *ngIf="!interestCustTestSel"> Add interest</a> </ion-label>
           </ion-item>
         </ion-list>
 

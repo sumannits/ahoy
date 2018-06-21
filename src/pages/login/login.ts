@@ -37,8 +37,6 @@ export class LoginPage {
 
   // Attempt to login in through our User service
   doLogin() {
-    
-
     let CheckvalidEmail = this.email.value.toString();
     let isValidEmail = this.validateEmail(CheckvalidEmail);
     if (this.form.valid && isValidEmail) {
