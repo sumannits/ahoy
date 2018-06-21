@@ -58,6 +58,7 @@ export class SignupPage {
   public locJsonData: any;
   public interestNameTest: string = '';
   public interestCustTestSel: boolean = false;
+  public nearestLoc:string = '';
 
   constructor(public navCtrl: NavController,
     public userService: AuthServiceProvider,
@@ -132,6 +133,7 @@ export class SignupPage {
     let filterIntData = _.map(this.InterestDropdownList, function(item) {
         if (item.checked == true) return item;
     });
+    //console.log(filterIntData);
     filterIntData = _.without(filterIntData, undefined);
     let userAddNewInt =this.form.controls['interested'].value;
     if (this.form.valid && (filterIntData.length >0 || this.interestNameTest!='')) {
@@ -169,6 +171,7 @@ export class SignupPage {
         //"deviceType": this.device.platform
       };
       //console.log(filterIntData);
+      //console.log(this.interestNameTest);
       this.userService.postData(signupJsonData,'Customers').then((result) => {
         //console.log(result);
         this.responseData = result;
@@ -183,7 +186,7 @@ export class SignupPage {
           //   });
           // }
 
-          if(this.interestNameTest != ''){
+          if(this.interestNameTest != '' && this.interestCustTestSel){
             this.createUserInterest(this.interestNameTest, userId);
           }
           
@@ -385,7 +388,7 @@ export class SignupPage {
   }
 
   public getInterestList(){
-    let filterUserData = '{"where":{"is_active":true}}';
+    let filterUserData = '{"where":{"is_active":true, "or":[{"is_hidden":0},{"is_hidden":null}]}}';
     this.userService.getData('interests?filter=' + filterUserData).then((result) => {
       //console.log(result);
       this.responseIntData = result;
@@ -414,10 +417,13 @@ export class SignupPage {
 
   public AddCustInt(){
     this.interestCustTestSel = true;
+    this.InterestDropdownList = this.interestList;
   }
 
   public DeleteCustInt(){
     this.interestCustTestSel = false;
+    this.InterestDropdownList = this.interestList;
+    this.interestNameTest='';
   }
   public searchItems(ev: any) {
     // set val to the value of the searchbar
@@ -519,7 +525,7 @@ export class SignupPage {
     let nodeName = community.name;
     let selectedUser:Array<any> = [];
     if(selInterest>0){
-      nodeName = nodeName+' node ';
+      nodeName = nodeName+' - '+this.nearestLoc;
 
       // create new node respect to community
       let nodeCreateJson = {name: nodeName, description: community.description, location: community.location, type: community.community_type, latitude: community.latitude, longitude: community.longitude, is_active:1, created_at:new Date(),community_id:comId};
@@ -575,6 +581,7 @@ export class SignupPage {
         }
         if(result[0].locality){
           str= str+ result[0].locality +', ';
+          this.nearestLoc = result[0].locality;
         }
         if(result[0].subAdministrativeArea){
           str= str+ result[0].subAdministrativeArea +', ';
@@ -588,37 +595,11 @@ export class SignupPage {
         //resolve(str);
         this.location.formatted_address = str;
         this.location.name = str;
+        
     //console.log(JSON.stringify(result))
 
   }).catch((error: any) => console.log(error));
 
-      // return new Promise((resolve, reject) =>{
-      //    this._GEOCODE.reverseGeocode(lat, lng).then((result : NativeGeocoderReverseResult) => {
-      //       //let str : string   = `${result.postalCode} ,${result.locality}, ${result.countryName}`;
-      //       let str : string   = '';
-      //       if(result[0].thoroughfare){
-      //         str= str+ result[0].thoroughfare +', ';
-      //       }
-      //       if(result[0].locality){
-      //         str= str+ result[0].locality +', ';
-      //       }
-      //       if(result[0].subAdministrativeArea){
-      //         str= str+ result[0].subAdministrativeArea +', ';
-      //       }
-      //       if(result[0].administrativeArea){
-      //         str= str+ result[0].administrativeArea +', ';
-      //       }
-      //       if(result[0].countryName){
-      //         str= str+ result[0].countryName;
-      //       }
-      //       resolve(str);
-      //    })
-      //    .catch((error: any) =>
-      //    {
-      //       //console.log(error);
-      //       reject(error);
-      //    });
-      // });
    }
 
 }

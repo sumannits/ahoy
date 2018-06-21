@@ -73,7 +73,7 @@
         
         <ion-list *ngIf="!addNewInt">
             <ion-item *ngFor="let itemInt of mySelectedIntNameList">
-                <ion-label>{{ itemInt.interest_text }}</ion-label>
+                <ion-label>{{ itemInt.interest.name}}</ion-label>
             </ion-item>
             <ion-item *ngIf="mySelectedIntNameList?.length == 0">
                 <ion-label> No interest found.</ion-label>

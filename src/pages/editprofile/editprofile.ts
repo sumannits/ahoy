@@ -110,7 +110,7 @@ export class EditprofilePage {
     }
     
     //let filterIntData={"user_id": this.userData.id};
-    let filterIntData = '{"where":{"user_id":'+this.userData.id+'}}';
+    let filterIntData = '{"where":{"user_id":'+this.userData.id+'}, "include":["interest"]}';
     this.userService.getData('CustomerInterests?filter='+filterIntData).then((result) => {
       this.responseDataAny=result;
       this.mySelectedIntNameList = result;
@@ -134,9 +134,7 @@ export class EditprofilePage {
       //   buttons: ['Ok']
       // });
       // alert.present();
-    });
-
-    
+    }); 
     //console.log('ionViewDidLoad EditprofilePage');
   }
 
@@ -434,7 +432,7 @@ export class EditprofilePage {
   }
 
   public getInterestList(){
-    let filterUserData = '{"where":{"is_active":true}}';
+    let filterUserData = '{"where":{"is_active":true, "or":[{"is_hidden":0},{"is_hidden":null}]}}';
     this.userService.getData('interests?filter=' + filterUserData).then((result) => {
       //console.log(this.mySelectedIntList);
       this.responseIntData = result;
@@ -472,7 +470,8 @@ export class EditprofilePage {
     const val = ev.target.value;
     // if the value is an empty string don't filter the items
     if (val && val.trim() != '') {
-      this.InterestDropdownList=this.searchPipe(this.interestList, val);
+      let searchVal = val.trim();
+      this.InterestDropdownList=this.searchPipe(this.interestList, searchVal);
     }else{
       this.InterestDropdownList = this.interestList;
     }
