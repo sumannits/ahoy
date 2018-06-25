@@ -66,4 +66,19 @@ page-signup {
       .sign-btn{
         margin: 60px 0;
       }
+      .list_height{
+        max-height: 200px;
+        overflow-y: scroll;
+      }
+      .custom-autocomplete__dropdown{
+        position: relative !important;
+      }
+      
+      .padding-eight{padding:8px;}
+      .add-interest .list .item-block{margin-bottom:0 !important}
+		
+		/******************ios**************************/
+		scroll-content,.scroll-content{margin-top: 157px;}
+
+
 }

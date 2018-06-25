@@ -6,7 +6,7 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { FilePath } from '@ionic-native/file-path';
 import { File } from '@ionic-native/file';
-
+import * as _ from 'lodash';
 /**
  * Generated class for the EditprofilePage page.
  *
@@ -28,10 +28,27 @@ export class EditprofilePage {
   private responseDataAny: any;
   public userData:any;
   public interestList = [];
+  public InterestDropdownList = [];
+  public mySelectedIntList = [];
+  public mySelectedIntNameList:any;
+  public selectedIntItems = [];
+  public responseIntData: any;
+  public addNewInt:boolean = false;
   //public imageURI:any;
   //public imageFileName:any;
   //public currentName:any;
   public lastImage: string = null;
+
+  public selectLocation: boolean =false;
+  public location: any = { lat:null, lng: null, name: null, formatted_address: null}; 
+  //public defaultLat:number;
+  //public defaultLng:number;
+  public userSettings: any = {
+    showSearchButton:false,
+    inputPlaceholderText: 'Search for a place'
+  };
+  public locJsonData: any;
+  public preSelectedIntItems = [];
 
   constructor(
     public navCtrl: NavController, 
@@ -61,6 +78,10 @@ export class EditprofilePage {
       name: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z ]*')]),
       phone: new FormControl('', [Validators.required, Validators.pattern('[0-9]{10}')]),
       image: new FormControl(''),
+      location: new FormControl(''),
+      lat: new FormControl(''),
+      email: new FormControl(''),
+      lng: new FormControl(''),
       bio: new FormControl(''),
       interested: fbuilder.array([ ])
     });
@@ -68,21 +89,41 @@ export class EditprofilePage {
   }
 
   ionViewDidLoad() {
-    //console.log('ionViewDidLoad EditprofilePage');
+    
     this.getMyInterestList();
+    this.getInterestList();
   }
 
   getMyInterestList() {
+    this.form.controls['location'].setValue(this.userData.location);
+    this.form.controls['lat'].setValue(this.userData.lat);
+    this.form.controls['lng'].setValue(this.userData.lng);
+    this.form.controls['name'].setValue(this.userData.name);
+    this.form.controls['email'].setValue(this.userData.email);
+    this.form.controls['phone'].setValue(this.userData.phone);
+    this.form.controls['bio'].setValue(this.userData.bio);
+
+    if(this.userData.location!=''){
+      this.userSettings['inputString']=this.userData.location;
+      this.userSettings = Object.assign({},this.userSettings);
+      this.selectLocation = true;
+    }
+    
     //let filterIntData={"user_id": this.userData.id};
-    let filterIntData = '{"where":{"user_id":'+this.userData.id+'}}';
+    let filterIntData = '{"where":{"user_id":'+this.userData.id+'}, "include":["interest"]}';
     this.userService.getData('CustomerInterests?filter='+filterIntData).then((result) => {
       this.responseDataAny=result;
+      this.mySelectedIntNameList = result;
       //console.log(result);
       if(this.responseDataAny.length>0){
-        this.interestList=this.responseDataAny;
-        this.interestList.forEach(element => {
-          if(element.interest_text!=''){
-            this.editIntInputField(element);
+        this.responseDataAny.forEach(element => {
+          if(element.interestId!=''){
+            this.mySelectedIntList.push(element.interestId);
+            // this.preSelectedIntItems.push({
+            //   "name" : element.interest_text,
+            //   //"user_id" : this.userData.id,
+            //   "id" : element.interestId
+            // });
           }
         });
       }
@@ -93,9 +134,7 @@ export class EditprofilePage {
       //   buttons: ['Ok']
       // });
       // alert.present();
-    });
-
-    
+    }); 
     //console.log('ionViewDidLoad EditprofilePage');
   }
 
@@ -123,8 +162,9 @@ export class EditprofilePage {
   }
 
   addNewInputField() : void{
-    const control = <FormArray>this.form.controls.interested;
-    control.push(this.initInterestedFields());
+    // const control = <FormArray>this.form.controls.interested;
+    // control.push(this.initInterestedFields());
+    this.addNewInt = !this.addNewInt;
   }
 
   removeInputField(i : number) : void{
@@ -133,6 +173,11 @@ export class EditprofilePage {
   }
 
   updateDetails(data:any){
+    let filterIntData = _.map(this.InterestDropdownList, function(item) {
+        if (item.checked == true) return item;
+    });
+    filterIntData = _.without(filterIntData, undefined)
+
     if(this.form.valid){
       this.lastImage = '';
       if(this.lastImage!=''){
@@ -147,16 +192,51 @@ export class EditprofilePage {
           localStorage.setItem('userPrfDet', JSON.stringify(result));
           this.presentToast('Data updated successfully.');
 
-          if(data.interested.length>0){
-            let custIntJData={"interested":data.interested}
+          //console.log(filterIntData);
+          if(filterIntData.length>0){
+            filterIntData.forEach(element => {
+              if(element.name!=''){
+                let userInterestList={
+                  "interest_text" : element.name,
+                  "user_id" : this.userData.id,
+                  "interestId" : element.id
+                };
+                this.selectedIntItems.push(userInterestList);
+
+                // insert data into node module
+                //if(){
+                  let getNodeList='{"where":{"interestId":'+element.id+'}, "include":["nodedet"]}';
+                  this.userService.getData('NodeInterests?filter=' + getNodeList).then((result:any) => {
+                    if(result.length > 0){
+                      this.addUserToCommunityNode(result);
+                    }
+                    //console.log(result);
+                  
+                  }, (err) => {
+                    
+                  });
+                //}
+                }
+            });
+            
+            let custIntJData={"interested":this.selectedIntItems}
             this.userService.postData(custIntJData,'CustomerInterests/insertInterest').then((result) => {
              
             }, (err) => {
               
             });
           }
+
+          // if(data.interested.length>0){
+          //   let custIntJData={"interested":data.interested}
+          //   this.userService.postData(custIntJData,'CustomerInterests/insertInterest').then((result) => {
+             
+          //   }, (err) => {
+              
+          //   });
+          // }
           
-          //this.navCtrl.setRoot('WelcomePage');
+          this.navCtrl.setRoot('WelcomePage');
         }else{
           let alert = this.alertCtrl.create({
             title: 'Error!',
@@ -179,6 +259,50 @@ export class EditprofilePage {
     }
     this.lastImage ='';
     //console.log(data);
+  }
+
+  addUserToCommunityNode(nodeList:any){
+    let customerNodeList = [];
+    let customerLat = Number(this.form.controls['lat'].value);
+    let customerLng = Number(this.form.controls['lng'].value);
+    //console.log(customerLat);
+    nodeList.forEach(element => {
+      if(element.nodedet.latitude!='' && element.nodedet.longitude!=''){
+        let distance = this.calcCrow(customerLat, customerLng, Number(element.nodedet.latitude), Number(element.nodedet.longitude));
+        if (distance < 1) {
+          let data1 = { cDate: new Date(), customerId: this.userData.id, node_id: element.node_id, community_id: element.nodedet.community_id }
+          customerNodeList.push(data1);
+        }
+      }
+    });
+
+    if(customerNodeList.length > 0){
+        let custNodeJData = { "selectedNodes": customerNodeList, customerId: this.userData.id};
+        this.userService.postData(custNodeJData,'NodeUsers/addUserNodes').then((result) => {
+          
+        }, (err) => {
+          
+        });
+    }
+  }
+
+
+  calcCrow(lat1, lon1, lat2, lon2) {
+      let R = 6371; // km
+      let dLat = this.toRad(lat2 - lat1);
+      let dLon = this.toRad(lon2 - lon1);
+      let latitude1 = this.toRad(lat1);
+      let latitude2 = this.toRad(lat2);
+
+      let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(latitude1) * Math.cos(latitude2);
+      let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      let d = R * c;
+      return d;
+  }
+
+  toRad(Value) {
+    return Value * Math.PI / 180;
   }
 
   presentActionSheet() {
@@ -307,4 +431,73 @@ export class EditprofilePage {
     });
   }
 
+  public getInterestList(){
+    let filterUserData = '{"where":{"is_active":true, "or":[{"is_hidden":0},{"is_hidden":null}]}}';
+    this.userService.getData('interests?filter=' + filterUserData).then((result) => {
+      //console.log(this.mySelectedIntList);
+      this.responseIntData = result;
+      if (this.responseIntData.length > 0) {
+        this.responseIntData.forEach((color: { name: string, id: number, description: string }) => {
+          let checkInt = _.includes(this.mySelectedIntList, color.id);
+          let checkedVal:boolean = false;
+          if(checkInt){
+            checkedVal= true;
+          }
+          //console.log(checkInt);
+          this.InterestDropdownList.push({
+            id: color.id,
+            name: color.name,
+            description: color.description,
+            checked:checkedVal
+          });
+        });
+        this.interestList = this.InterestDropdownList;
+        //console.log(this.InterestDropdownList);
+      }
+    }, (err) => {
+      let emailErrMsg= this.jsonErrMsg.messageData(err);
+      let alert = this.alertCtrl.create({
+        title: 'Error!',
+        subTitle: this.jsonErrMsg.messageData(err),
+        buttons: ['Ok']
+      });
+      alert.present();
+    });
+  }
+
+  public searchItems(ev: any) {
+    // set val to the value of the searchbar
+    const val = ev.target.value;
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() != '') {
+      let searchVal = val.trim();
+      this.InterestDropdownList=this.searchPipe(this.interestList, searchVal);
+    }else{
+      this.InterestDropdownList = this.interestList;
+    }
+  }
+
+  public searchPipe(items, sdata){
+      const /** @type {?} */ toCompare = sdata.toLowerCase();
+      return items.filter(function (item) {
+          for (let /** @type {?} */ property in item) {
+            //console.log(item);
+              if (item[property] === null) {
+                  continue;
+              }
+              if (item[property].toString().toLowerCase().includes(toCompare)) {
+                  return true;
+              }
+          }
+          return false;
+      });
+  }
+
+  public autoCompleteCallback1(selectedData:any) {
+    this.locJsonData=JSON.parse(JSON.stringify(selectedData));
+    this.form.controls['location'].setValue(this.locJsonData.data.formatted_address);
+    this.form.controls['lat'].setValue(this.locJsonData.data.geometry.location.lat);
+    this.form.controls['lng'].setValue(this.locJsonData.data.geometry.location.lng);
+    this.selectLocation = true;
+  }
 }

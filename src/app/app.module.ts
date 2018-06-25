@@ -14,6 +14,11 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { AuthServiceProvider,ResponseMessage } from '../providers';
 import { MyApp } from './app.component';
+//import { GoogleMapsProvider } from '../providers/google-maps/google-maps';
+//import { Connectivity } from '../providers/connectivity-service/connectivity-service';
+import { Geolocation } from '@ionic-native/geolocation';
+//import { GoogleMapProvider } from '../providers/google-map/google-map';
+//import { Network } from '@ionic-native/network';
 //import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
 
 // The translate loader needs to know where to load i18n files
@@ -61,6 +66,7 @@ export function createTranslateLoader(http: HttpClient) {
     }),
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
+    //SelectSearchableModule
     //CloudModule.forRoot(cloudSettings)
   ],
   bootstrap: [IonicApp],
@@ -79,7 +85,12 @@ export function createTranslateLoader(http: HttpClient) {
     
     //{ provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    // GoogleMapsProvider,
+    //Connectivity,
+    Geolocation,
+    //GoogleMapProvider,
+    //Network
   ]
 })
 export class AppModule { }

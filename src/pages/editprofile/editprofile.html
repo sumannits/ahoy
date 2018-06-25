@@ -4,7 +4,7 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
+<ion-header class="header-tab-area">
   <ion-navbar>
     <ion-title>Edit Profile</ion-title>
   </ion-navbar>
@@ -15,7 +15,7 @@
 		<ion-list class="m-0">
 			<ion-item>
         <ion-label fixed><ion-icon name="md-person"></ion-icon></ion-label>
-				<ion-input type="text" placeholder="Name" [(ngModel)]="userData.name" formControlName="name" autocapitalize="off"></ion-input>
+				<ion-input type="text" placeholder="Name" formControlName="name" autocapitalize="off"></ion-input>
       </ion-item>
       <ion-item no-lines *ngIf="( form.get('name').hasError('pattern') || form.get('name').hasError('required') ) && form.get('name').touched">
         <div class="error" *ngIf="form.get('name').hasError('required') && form.get('name').touched">
@@ -25,9 +25,13 @@
           Just use alphabet character
         </div>
       </ion-item>
+      <ion-item>
+          <ion-label fixed><ion-icon name="ios-mail"></ion-icon></ion-label>
+          <ion-input type="email" formControlName="email" readonly placeholder="Email"></ion-input>
+      </ion-item>
 			<ion-item>
         <ion-label fixed><ion-icon name="call"></ion-icon></ion-label>
-        <ion-input type="number" placeholder="Phone No" [(ngModel)]="userData.phone" formControlName="phone" autocapitalize="off" ></ion-input>
+        <ion-input type="number" placeholder="Phone No" formControlName="phone" autocapitalize="off" ></ion-input>
       </ion-item>
 
       <ion-item no-lines *ngIf="( form.get('phone').hasError('pattern') || form.get('phone').hasError('required') ) && form.get('phone').touched">
@@ -39,8 +43,12 @@
         </div>
       </ion-item>
       <ion-item>
+          <!--<ion-label fixed><ion-icon name="ios-pin"></ion-icon></ion-label>-->
+          <ng4geo-autocomplete [userSettings]="userSettings" (componentCallback)="autoCompleteCallback1($event)"></ng4geo-autocomplete>
+      </ion-item>
+      <ion-item>
         <ion-label fixed><ion-icon name="paper"></ion-icon></ion-label>
-        <ion-textarea placeholder="About Yourself" [(ngModel)]="userData.bio" formControlName="bio" autocapitalize="off" ></ion-textarea>
+        <ion-textarea placeholder="About Yourself" formControlName="bio" autocapitalize="off" ></ion-textarea>
       </ion-item>
 
       <!--<ion-item>
@@ -56,14 +64,32 @@
       </ion-item>
 		</ion-list>
 
-    <ion-list class="mt-10">
+    <ion-list class="mt-10 add-interest">
       <!--<ion-list class="m-0">-->
         <a class="text-dark-brown add-interest" (click)="addNewInputField()">  <ion-icon name="ios-add-circle-outline"></ion-icon>  Add Interested</a>
         <!--<ion-item>
           <ion-input type="text" placeholder="Type your interest"></ion-input>
         </ion-item>-->
-  
-          <div formArrayName="interested" margin-bottom>
+        
+        <ion-list *ngIf="!addNewInt">
+            <ion-item *ngFor="let itemInt of mySelectedIntNameList">
+                <ion-label>{{ itemInt.interest.name}}</ion-label>
+            </ion-item>
+            <ion-item *ngIf="mySelectedIntNameList?.length == 0">
+                <ion-label> No interest found.</ion-label>
+            </ion-item>
+        </ion-list>
+        <ion-searchbar *ngIf="addNewInt" (ionInput)="searchItems($event)"></ion-searchbar>
+        <ion-list class="list_height" *ngIf="addNewInt">
+          <ion-item *ngFor="let item of InterestDropdownList">
+              <ion-label>{{ item.name }}</ion-label>
+              <ion-checkbox [(ngModel)]="item.checked" [ngModelOptions]="{standalone: true}" ></ion-checkbox>
+          </ion-item>
+          <ion-item *ngIf="InterestDropdownList?.length == 0">
+              <ion-label> No interest found.</ion-label>
+          </ion-item>
+        </ion-list>
+          <!--<div formArrayName="interested" margin-bottom>
               <section
                  [formGroupName]="i"
                  *ngFor="let tech of form.controls.interested.controls; let i = index">
@@ -77,7 +103,7 @@
                     </span>
                  </ion-item-group>
               </section>
-           </div>
+           </div>-->
       </ion-list>
 
 		<ion-list no-lines>
