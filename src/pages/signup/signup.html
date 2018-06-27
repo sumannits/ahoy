@@ -1,7 +1,14 @@
-<ion-content class="dark-bg">
-  <div class="logo">
+<ion-header class="header-tab-area">
+	<div class="logo">
     <h2>Sign Up</h2>
-  </div>
+   </div>
+</ion-header>
+
+
+<ion-content class="dark-bg">
+  <!--<div class="logo">
+    <h2>Sign Up</h2>
+  </div>-->
   <form [formGroup]="form" #signupForm="ngForm">
 		<ion-list class="m-0" *ngIf="!isNextFrm">
 			<ion-item>
@@ -33,19 +40,21 @@
 				<ion-input type="password" placeholder="Confirm Password" [formControl]="cpassword"  name="cpassword" reverse="false" autocapitalize="off" validateEqual="password"></ion-input>
 			</ion-item>
 		</ion-list>
-		<ion-list class="m-0" *ngIf="isNextFrm">
+		<ion-list class="m-0 add-interest" *ngIf="isNextFrm">
         <ion-label>Select your interest</ion-label>
-        <ion-searchbar (ionInput)="searchItems($event)" *ngIf="!interestCustTestSel"></ion-searchbar>
-        <ion-list class="list_height">
-            <ion-item *ngIf="interestCustTestSel">
-                <ion-label> "{{interestNameTest}}"  <a (click)="DeleteCustInt()"> <ion-icon name="md-close-circle"></ion-icon> </a></ion-label>
-            </ion-item>
+        <ion-searchbar [(ngModel)]="myInputStr" [ngModelOptions]="{standalone: true}" (ionInput)="searchItems($event)"></ion-searchbar>
+        <ion-list class="list_height padding-eight">
+            <ion-list *ngIf="custIntArr.length > 0">
+                <ion-item *ngFor="let custInt of custIntArr; let i = index">
+                    <ion-label> {{custInt}}  <a (click)="DeleteCustInt(i)"> <ion-icon name="md-close-circle"></ion-icon> </a></ion-label>
+                </ion-item>
+            </ion-list>
           <ion-item *ngFor="let item of InterestDropdownList">
               <ion-label>{{ item.name }}</ion-label>
               <ion-checkbox [(ngModel)]="item.checked" [ngModelOptions]="{standalone: true}" ></ion-checkbox>
           </ion-item>
           <ion-item *ngIf="InterestDropdownList.length == 0">
-              <ion-label> "{{interestNameTest}}" <a (click)="AddCustInt()" *ngIf="!interestCustTestSel"> Add interest</a> </ion-label>
+              <ion-label> "{{interestNameTest}}" <a (click)="AddCustInt()"> Add interest</a> </ion-label>
           </ion-item>
         </ion-list>
 
