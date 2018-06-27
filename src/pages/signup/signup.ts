@@ -36,6 +36,7 @@ export class SignupPage {
   private isNextFrm:boolean=false;
   private checkEmailExist:boolean=true;
   public interestList = [];
+  public hideInterestList = [];
   
   public InterestDropdownList = [];
   public selectedIntItems = [];
@@ -59,6 +60,8 @@ export class SignupPage {
   public interestNameTest: string = '';
   public interestCustTestSel: boolean = false;
   public nearestLoc:string = '';
+  public custIntArr = [];
+  public myInputStr:string = '';
 
   constructor(public navCtrl: NavController,
     public userService: AuthServiceProvider,
@@ -91,6 +94,7 @@ export class SignupPage {
       this.signupErrorString = value;
     })
     this.getInterestList();
+    this.getHideInterestList();
     this.geolocation.getCurrentPosition().then(pos => {
       //console.log(pos.coords);
       //console.log('lat: ' + pos.coords.latitude + ', lon: ' + pos.coords.longitude);
@@ -136,7 +140,7 @@ export class SignupPage {
     //console.log(filterIntData);
     filterIntData = _.without(filterIntData, undefined);
     let userAddNewInt =this.form.controls['interested'].value;
-    if (this.form.valid && (filterIntData.length >0 || this.interestNameTest!='')) {
+    if (this.form.valid && (filterIntData.length >0 || this.custIntArr.length >0)) {
       
       if(this.location.lat && this.location.lat!=''){
 
@@ -186,8 +190,39 @@ export class SignupPage {
           //   });
           // }
 
-          if(this.interestNameTest != '' && this.interestCustTestSel){
-            this.createUserInterest(this.interestNameTest, userId);
+          if(this.custIntArr.length > 0){
+            this.custIntArr.forEach(element =>{
+              if(element!='' && element!=' '){
+                let selIntTest = element.trim();
+                let filterCustHidIntData=this.searchPipe(this.hideInterestList, selIntTest);
+                if(filterCustHidIntData.length > 0){
+                  // add existing interest data
+                  filterCustHidIntData.forEach(element =>{
+                    if(element.is_active){
+                      this.selectedIntItems.push({
+                        "interest_text" : element.name,
+                        "user_id" : userId,
+                        "interestId" : element.id
+                      });
+
+                      let getNodeList='{"where":{"interestId":'+element.id+'}, "include":["nodedet"]}';
+                      this.userService.getData('NodeInterests?filter=' + getNodeList).then((result:any) => {
+                        if(result.length > 0){
+                          this.addUserToCommunityNode(result, userId);
+                        }
+                        //console.log(result);
+                      
+                      }, (err) => {
+                        
+                      });
+                    }
+                  });
+
+                }else{
+                  this.createUserInterest(selIntTest, userId);
+                }
+              }
+            });
           }
           
           if(filterIntData.length>0){
@@ -271,21 +306,27 @@ export class SignupPage {
     nodeList.forEach(element => {
       if(element.nodedet.latitude!='' && element.nodedet.longitude!=''){
         let distance = this.calcCrow(customerLat, customerLng, Number(element.nodedet.latitude), Number(element.nodedet.longitude));
-        if (distance < 1) {
-          let data1 = { cDate: new Date(), customerId: LastUserId, node_id: element.node_id, community_id: element.nodedet.community_id }
-          customerNodeList.push(data1);
+        if (distance < 10) {
+          let data1 = { cdate: new Date(), customerId: LastUserId, node_id: element.node_id, community_id: element.nodedet.community_id }
+          //customerNodeList.push(data1);
+          this.userService.postData(data1,'NodeUsers').then((result) => {
+          
+          }, (err) => {
+            
+          });
+
         }
       }
     });
 
-    if(customerNodeList.length > 0){
-        let custNodeJData = { "selectedNodes": customerNodeList, customerId: LastUserId};
-        this.userService.postData(custNodeJData,'NodeUsers/addUserNodes').then((result) => {
+    // if(customerNodeList.length > 0){
+    //     let custNodeJData = { "selectedNodes": customerNodeList, customerId: LastUserId};
+    //     this.userService.postData(custNodeJData,'NodeUsers/addUserNodes').then((result) => {
           
-        }, (err) => {
+    //     }, (err) => {
           
-        });
-    }
+    //     });
+    // }
   }
 
 
@@ -415,15 +456,55 @@ export class SignupPage {
     });
   }
 
+  public getHideInterestList(){
+    let filterUserData = '{"where":{"or":[{"is_hidden":true},{"is_active":false}]}}';
+    this.userService.getData('interests?filter=' + filterUserData).then((result:any) => {
+      if (result.length > 0) {
+        result.forEach((color: { name: string, id: number, description: string, is_active:boolean }) => {
+          this.hideInterestList.push({
+            id: color.id,
+            name: color.name,
+            description: color.description,
+            is_active: color.is_active
+          });
+        });
+      }
+      //console.log(this.hideInterestList);
+    }, (err) => {
+      
+    });
+  }
+  
+
   public AddCustInt(){
     this.interestCustTestSel = true;
     this.InterestDropdownList = this.interestList;
+    if(this.interestNameTest!=''){
+      let intNameTrim = this.interestNameTest.toLowerCase();
+      intNameTrim = intNameTrim.trim();
+      let checkArrNameExt=_.includes(this.custIntArr, intNameTrim);
+      if(!checkArrNameExt){
+        this.custIntArr.push(this.interestNameTest);
+        this.interestNameTest='';
+        this.myInputStr='';
+      }else{
+        let alert = this.alertCtrl.create({
+          title: 'Error!',
+          subTitle: 'Interest name is already exist. Please type different one.',
+          buttons: ['Ok']
+        });
+        alert.present();
+      }
+    }
+    //console.log(this.custIntArr);
   }
 
-  public DeleteCustInt(){
+  public DeleteCustInt(i:number){
     this.interestCustTestSel = false;
     this.InterestDropdownList = this.interestList;
     this.interestNameTest='';
+    this.custIntArr.splice(i, 1);
+    //console.log(this.custIntArr);
   }
   public searchItems(ev: any) {
     // set val to the value of the searchbar
@@ -431,8 +512,10 @@ export class SignupPage {
 
     // if the value is an empty string don't filter the items
     if (val && val.trim() != '') {
+      this.myInputStr =val;
       let trimVal =val.trim();
       this.interestNameTest= trimVal;
+      
       this.InterestDropdownList=this.searchPipe(this.interestList, trimVal);
       // this.items = this.items.filter((item) => {
       //   return (item.toLowerCase().indexOf(val.toLowerCase()) > -1);
@@ -440,6 +523,7 @@ export class SignupPage {
     }else{
       this.InterestDropdownList = this.interestList;
       this.interestNameTest='';
+      this.myInputStr = '';
     }
     //console.log(this.interestNameTest);
   }
@@ -463,7 +547,7 @@ export class SignupPage {
   public createUserInterest(IntName, userId){
     let selectedUser:Array<any> = [];
     selectedUser.push(userId);
-    let IntjsonData = {"name":IntName,"is_pid":0, "description":"", "is_active":true, "user_id":userId};
+    let IntjsonData = {"name":IntName,"is_pid":0, "description":IntName, "is_active":true, "user_id":userId};
     this.userService.postData(IntjsonData,'interests').then((result:any) => {
       let IntId = result.id;
       if(IntId!=''){
